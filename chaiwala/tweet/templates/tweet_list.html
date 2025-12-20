@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Chaiwala - Home
+{% endblock %}
+
+{% block content %}
+<h1 class="text-center mt-4">Welcome to Chaiwala!</h1>
+<a class="btn btn-primary mb-4" href="{% url 'tweet_create' %}">Add Tweets Here:</a>
+
+{% if search_query %}
+<div class="alert alert-info mb-4" role="alert">
+    <strong>Search Results:</strong> Showing results for "{{ search_query }}"
+    <a href="{% url 'tweet_list' %}" class="btn btn-sm btn-outline-secondary ms-2">Clear Search</a>
+</div>
+{% endif %}
+
+<div class="container row gap-3">
+    {% if tweets %}
+        {% for tweet in tweets %}
+           <div class="card" style="width: 18rem;">
+      <img src="{{tweet.photo.url}}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">{{tweet.user.username}}</h5>
+        <p class="card-text">{{tweet.text}}</p>
+        {% if tweet.user == user %}
+        <a href="{% url 'tweet_edit' tweet.id %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'tweet_delete' tweet.id %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+      </div>
+    </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            {% if search_query %}
+                No tweets found matching "{{ search_query }}". Try a different search term.
+            {% else %}
+                No tweets available. Be the first to <a href="{% url 'tweet_create' %}">create a tweet</a>!
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
