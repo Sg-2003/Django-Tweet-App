@@ -1,0 +1,22 @@
+databases:
+  - name: chaiwala-db
+    databaseName: chaiwala
+    user: chaiwala
+
+services:
+  - type: web
+    name: django-tweet-app
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn chaiwala.wsgi --chdir chaiwala"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: chaiwala-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: PYTHON_VERSION
+        value: 3.12.9
