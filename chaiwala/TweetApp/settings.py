@@ -85,17 +85,17 @@ WSGI_APPLICATION = 'TweetApp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-import shutil
-
 if os.environ.get('VERCEL') == '1':
     source_db = BASE_DIR / 'db.sqlite3'
     tmp_db = Path('/tmp/db.sqlite3')
     
     # We copy the DB to /tmp to make it writable. 
     # NOTE: This data will be lost when the Vercel function spins down!
-    if not tmp_db.exists() and source_db.exists():
-        shutil.copyfile(source_db, tmp_db)
-        os.chmod(tmp_db, 0o666)  # Ensure it is writable!
+    if source_db.exists():
+        if not tmp_db.exists() or (tmp_db.stat().st_mtime < source_db.stat().st_mtime):
+            import shutil
+            shutil.copyfile(source_db, tmp_db)
+            os.chmod(tmp_db, 0o666)  # Ensure it is writable!
     
     db_path = tmp_db
 else:
