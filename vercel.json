@@ -2,7 +2,8 @@
   "version": 2,
   "functions": {
     "api/index.py": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": "chaiwala/{staticfiles/**,db.sqlite3}"
     }
   },
   "rewrites": [

@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -62,7 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'chaiwala.urls'
+ROOT_URLCONF = 'TweetApp.urls'
 
 TEMPLATES = [
     {
@@ -79,15 +79,31 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'chaiwala.wsgi.application'
+WSGI_APPLICATION = 'TweetApp.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+import shutil
+
+if os.environ.get('VERCEL') == '1':
+    source_db = BASE_DIR / 'db.sqlite3'
+    tmp_db = Path('/tmp/db.sqlite3')
+    
+    # We copy the DB to /tmp to make it writable. 
+    # NOTE: This data will be lost when the Vercel function spins down!
+    if not tmp_db.exists() and source_db.exists():
+        shutil.copyfile(source_db, tmp_db)
+        os.chmod(tmp_db, 0o666)  # Ensure it is writable!
+    
+    db_path = tmp_db
+else:
+    db_path = BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=f"sqlite:///{db_path}",
         conn_max_age=600,
         conn_health_checks=True,
     )
@@ -134,16 +150,22 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# WhiteNoise compressed static file storage
+# Database-backed file storage for default uploads
 STORAGES = {
+    "default": {
+        "BACKEND": "tweet.storage.DatabaseStorage",
+    },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+if os.environ.get('VERCEL') == '1':
+    MEDIA_ROOT = '/tmp/media'
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = '/accounts/login'
 

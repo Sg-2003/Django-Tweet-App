@@ -13,3 +13,14 @@ class Tweet(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.text[:10]}'
+
+
+class DatabaseFile(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    content = models.BinaryField()
+    mime_type = models.CharField(max_length=100, blank=True)
+    size = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

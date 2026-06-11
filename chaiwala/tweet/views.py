@@ -73,4 +73,18 @@ def register(request):
     else:
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+from django.http import HttpResponse, Http404
+from .models import DatabaseFile
+
+def serve_db_file(request, path):
+    path = path.replace('\\', '/')
+    try:
+        db_file = DatabaseFile.objects.get(name=path)
+        response = HttpResponse(db_file.content, content_type=db_file.mime_type)
+        response['Content-Length'] = len(db_file.content)
+        response['Cache-Control'] = 'public, max-age=86400'
+        return response
+    except DatabaseFile.DoesNotExist:
+        raise Http404("File not found")
     

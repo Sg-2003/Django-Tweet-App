@@ -1,1 +1,1 @@
-web: gunicorn chaiwala.wsgi --chdir chaiwala
+web: gunicorn TweetApp.wsgi --chdir chaiwala

@@ -5,10 +5,10 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'chaiwala'))
 
 # Set the Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chaiwala.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'TweetApp.settings')
 
 # Import the Django WSGI application
-from chaiwala.wsgi import application
+from TweetApp.wsgi import application
 
 # Vercel expects a variable named `app`
 app = application

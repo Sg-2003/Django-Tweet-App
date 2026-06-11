@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Chaiwala - Home
+TweetApp - Home
 {% endblock %}
 
 {% block content %}
-<h1 class="text-center mt-4">Welcome to Chaiwala!</h1>
+<h1 class="text-center mt-4">Welcome to TweetApp!</h1>
 <a class="btn btn-primary mb-4" href="{% url 'tweet_create' %}">Add Tweets Here:</a>
 
 {% if search_query %}
@@ -19,7 +19,9 @@ Chaiwala - Home
     {% if tweets %}
         {% for tweet in tweets %}
            <div class="card" style="width: 18rem;">
+      {% if tweet.photo %}
       <img src="{{tweet.photo.url}}" class="card-img-top" alt="...">
+      {% endif %}
       <div class="card-body">
         <h5 class="card-title">{{tweet.user.username}}</h5>
         <p class="card-text">{{tweet.text}}</p>
